@@ -6,10 +6,15 @@ find_package(catkin REQUIRED)
 
 # catkin_package(DEPENDS eigen)
 
+# define choreonoid version to be installed 
+if(NOT CHOREONOID_VERSION)
+	set(CNOID_VER "1.4.0" CACHE STRING "choreonoid version to be installed" FORCE)
+endif()
+
 execute_process(
     COMMAND cmake -E chdir ${CMAKE_CURRENT_BINARY_DIR} # go to build/rtm-ros-robotics/choreonoid
     make -f ${PROJECT_SOURCE_DIR}/Makefile.choreonoid # PROJECT_SOURCE_DIR=src/rtm-ros-robotics/choreonoid
-    INSTALL_DIR=${CATKIN_DEVEL_PREFIX} # CATKIN_DEVEL_PREFIX=devel/bin (for making choreonoid in devel/bin)
+    INSTALL_DIR=${CATKIN_DEVEL_PREFIX} # CATKIN_DEVEL_PREFIX=devel (for making choreonoid(binary) in devel/bin)
     MK_DIR=${mk_PREFIX}/share/mk
     PATCH_DIR=${PROJECT_SOURCE_DIR}
     installed.choreonoid
@@ -28,17 +33,45 @@ if(NOT EXISTS ${PROJECT_SOURCE_DIR}/bin/)
     message(FATAL_ERROR "make_directory ${PROJECT_SOURCE_DIR}/bin/ failed: ${_make_failed}")
   endif(_make_failed)
 endif()
-
 if(EXISTS ${CATKIN_DEVEL_PREFIX}/bin/choreonoid)
   execute_process(
-    COMMAND cmake -E rename ${CATKIN_DEVEL_PREFIX}/bin/choreonoid ${PROJECT_SOURCE_DIR}/bin/choreonoid
-    RESULT_VARIABLE _rename_failed)
-  message("move library files ${PROJECT_SOURCE_DIR}/bin/choreonoid")
+    COMMAND cmake -E copy ${CATKIN_DEVEL_PREFIX}/bin/choreonoid ${PROJECT_SOURCE_DIR}/bin/choreonoid
+    RESULT_VARIABLE _copy_failed)
+  message("copy binary files ${PROJECT_SOURCE_DIR}/bin/choreonoid")
 endif()
 if (_rename_failed)
-  message(FATAL_ERROR "Move hrpsys/bin failed: ${_rename_failed}")
+  message(FATAL_ERROR "Copy hrpsys/bin failed: ${_rename_failed}")
 endif(_rename_failed)
 
-
-
-  
+# move libraries
+# lib -> {source}/lib
+if(NOT EXISTS ${PROJECT_SOURCE_DIR}/lib/)
+  execute_process(
+    COMMAND cmake -E make_directory ${PROJECT_SOURCE_DIR}/lib/
+    RESULT_VARIABLE _make_failed)
+  if (_make_failed)
+    message(FATAL_ERROR "make_directory ${PROJECT_SOURCE_DIR}/lib/ failed: ${_make_failed}")
+  endif(_make_failed)
+endif()
+execute_process(
+  COMMAND grep ${CATKIN_DEVEL_PREFIX}/lib/ ${CMAKE_CURRENT_BINARY_DIR}/build/choreonoid-${CNOID_VER}/install_manifest.txt
+  OUTPUT_VARIABLE _lib_files
+  RESULT_VARIABLE _grep_failed) # get path of installed lib files in choreonoid-* and preserve in _lib_files 
+if (_grep_failed)
+  message(FATAL_ERROR "grep : ${CMAKE_CURRENT_BINARY_DIR}/build/choreonoid-${CNOID_VER}/install_manifest.txt ${_grep_failed}")
+endif(_grep_failed)
+string(REGEX REPLACE "\n" ";" _lib_files ${_lib_files})
+foreach(_lib_file ${_lib_files})
+  get_filename_component(_lib_file_name ${_lib_file} NAME) # get filename (without path)
+  if ("${_lib_file}" MATCHES "lib/choreonoid*") # install libraries in lib/choreonoid-* 
+    string(REGEX REPLACE "${CATKIN_DEVEL_PREFIX}/lib/" "" _choreonoid_lib_file ${_lib_file}) # trim devel/rtm-ros-robotics/choreonoid/choreonoid-*/*.so -> choreonoid-*/*.so
+    get_filename_component(_choreonoid_file_dir  ${_choreonoid_lib_file} PATH) # trim choreonid-*/*.so -> choreonoid-*
+		execute_process(
+      COMMAND cmake -E copy_directory ${CATKIN_DEVEL_PREFIX}/lib/${_choreonoid_file_dir} ${PROJECT_SOURCE_DIR}/lib/${_choreonoid_file_dir}
+      RESULT_VARIABLE _copy_failed) # copy devel/rtm-ros-robotics/choreonoid/lib/choreonoid-* to src/rtm-ros-robotics/choreonoid
+  elseif ("${_lib_file_name}" MATCHES "libCnoid.*so") # install lib/libCnoid*.so
+    execute_process(
+      COMMAND cmake -E copy ${CATKIN_DEVEL_PREFIX}/lib/${_lib_file_name} ${PROJECT_SOURCE_DIR}/lib/${_lib_file_name}
+      RESULT_VARIABLE _copy_failed) # copy devel/rtm-ros-robotics/choreonoid/lib/libCnoid* to src/rtm-ros-robotics/choreonoid
+  endif()
+endforeach()
