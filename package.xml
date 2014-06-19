@@ -49,6 +49,20 @@ Please see their official web sites to see the details of their licenses.
 
   <!-- <build_depend>hrpsys_ros_bridge</build_depend> -->
   <!-- <build_depend>hrpsys_gazebo_msgs</build_depend> -->
+  <build_depend>doxygen</build_depend>
+  <build_depend>graphviz</build_depend>
+  <build_depend>zlib</build_depend>
+  <build_depend>libjpeg</build_depend>
+  <build_depend>libpng12-dev</build_depend>
+  <build_depend>libopenscenegraph</build_depend>
+  <build_depend>libsimage-dev</build_depend>
+  <build_depend>yaml</build_depend>
+  <build_depend>libqt4-dev</build_depend>
+  <build_depend>libqt4-opengl</build_depend>
+  <build_depend>wx-common</build_depend>
+  <build_depend>libqhull</build_depend>
+  <build_depend>qhull-bin</build_depend>
+
 
   <run_depend>doxygen</run_depend>
   <run_depend>graphviz</run_depend>

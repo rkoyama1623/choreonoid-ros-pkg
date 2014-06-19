@@ -7,8 +7,11 @@ find_package(catkin REQUIRED)
 # catkin_package(DEPENDS eigen)
 
 # define choreonoid version to be installed 
-if(NOT CHOREONOID_VERSION)
-	set(CNOID_VER "1.4.0" CACHE STRING "choreonoid version to be installed" FORCE)
+if(NOT CNOID_MAJOR_VER)
+	# set(CNOID_VER "1.4.0" CACHE STRING "choreonoid version to be installed" FORCE)
+	set(CNOID_MAJOR_VER 1) 
+	set(CNOID_MINOR_VER 4)
+	set(CNOID_PATCH_VER 0)
 endif()
 
 execute_process(
@@ -17,6 +20,7 @@ execute_process(
     INSTALL_DIR=${CATKIN_DEVEL_PREFIX} # CATKIN_DEVEL_PREFIX=devel (for making choreonoid(binary) in devel/bin)
     MK_DIR=${mk_PREFIX}/share/mk
     PATCH_DIR=${PROJECT_SOURCE_DIR}
+		CNOID_VER=${CNOID_MAJOR_VER}.${CNOID_MINOR_VER}.${CNOID_PATCH_VER}
     installed.choreonoid
     RESULT_VARIABLE _make_failed)
 if (_make_failed)
@@ -54,11 +58,11 @@ if(NOT EXISTS ${PROJECT_SOURCE_DIR}/lib/)
   endif(_make_failed)
 endif()
 execute_process(
-  COMMAND grep ${CATKIN_DEVEL_PREFIX}/lib/ ${CMAKE_CURRENT_BINARY_DIR}/build/choreonoid-${CNOID_VER}/install_manifest.txt
+  COMMAND grep ${CATKIN_DEVEL_PREFIX}/lib/ ${CMAKE_CURRENT_BINARY_DIR}/build/choreonoid-${CNOID_MAJOR_VER}.${CNOID_MINOR_VER}.${CNOID_PATCH_VER}/install_manifest.txt
   OUTPUT_VARIABLE _lib_files
   RESULT_VARIABLE _grep_failed) # get path of installed lib files in choreonoid-* and preserve in _lib_files 
 if (_grep_failed)
-  message(FATAL_ERROR "grep : ${CMAKE_CURRENT_BINARY_DIR}/build/choreonoid-${CNOID_VER}/install_manifest.txt ${_grep_failed}")
+  message(FATAL_ERROR "grep : ${CMAKE_CURRENT_BINARY_DIR}/build/choreonoid-${CNOID_MAJOR_VER}.${CNOID_MINOR_VER}.${CNOID_PATCH_VER}/install_manifest.txt ${_grep_failed}")
 endif(_grep_failed)
 string(REGEX REPLACE "\n" ";" _lib_files ${_lib_files})
 foreach(_lib_file ${_lib_files})
@@ -75,3 +79,18 @@ foreach(_lib_file ${_lib_files})
       RESULT_VARIABLE _copy_failed) # copy devel/rtm-ros-robotics/choreonoid/lib/libCnoid* to src/rtm-ros-robotics/choreonoid
   endif()
 endforeach()
+
+# for balancer plugin library
+if( CMAKE_SIZEOF_VOID_P EQUAL 8 ) # check ARCHITECTURE
+	set( ARCH_VAL x64 )
+elseif( CMAKE_SIZEOF_VOID_P EQUAL 4 )
+	set( ARCH_VAL x86 )
+else()
+	message(FATAL_ERROR "We can build on only Linux(32bit or 64bit)")
+endif()
+execute_process(
+	COMMAND cmake -E copy ${CMAKE_CURRENT_BINARY_DIR}/build/choreonoid-${CNOID_MAJOR_VER}.${CNOID_MINOR_VER}.${CNOID_PATCH_VER}/proprietary/BalancerPlugin/libCnoidBalancerPlugin.${ARCH_VAL}.so ${PROJECT_SOURCE_DIR}/lib/choreonoid-${CNOID_MAJOR_VER}.${CNOID_MINOR_VER}/libCnoidBalancerPlugin.so
+	RESULT_VARIABLE _balancer_library_copy_failed)
+if(_balancer_library_copy_failed)
+	message(FATAL_ERROR "Copy libCnoidBlancer.so failed: ${_balancer_library_copy_failed}")
+endif(_balancer_library_copy_failed)
