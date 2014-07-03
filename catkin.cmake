@@ -91,6 +91,9 @@ endif()
 execute_process(
 	COMMAND cmake -E copy ${CMAKE_CURRENT_BINARY_DIR}/build/choreonoid-${CNOID_MAJOR_VER}.${CNOID_MINOR_VER}.${CNOID_PATCH_VER}/proprietary/BalancerPlugin/libCnoidBalancerPlugin.${ARCH_VAL}.so ${PROJECT_SOURCE_DIR}/lib/choreonoid-${CNOID_MAJOR_VER}.${CNOID_MINOR_VER}/libCnoidBalancerPlugin.so
 	RESULT_VARIABLE _balancer_library_copy_failed)
+execute_process(
+	COMMAND cmake -E copy ${CMAKE_CURRENT_BINARY_DIR}/build/choreonoid-${CNOID_MAJOR_VER}.${CNOID_MINOR_VER}.${CNOID_PATCH_VER}/proprietary/BalancerPlugin/libCnoidBalancerPlugin.${ARCH_VAL}.so ${CATKIN_DEVEL_PREFIX}/lib/choreonoid-${CNOID_MAJOR_VER}.${CNOID_MINOR_VER}/libCnoidBalancerPlugin.so
+	RESULT_VARIABLE _balancer_library_copy_failed)
 if(_balancer_library_copy_failed)
 	message(FATAL_ERROR "Copy libCnoidBlancer.so failed: ${_balancer_library_copy_failed}")
 endif(_balancer_library_copy_failed)
