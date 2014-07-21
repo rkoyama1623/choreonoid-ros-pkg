@@ -1,21 +1,35 @@
+# -*- mode: makefile -*-
 INSTALL_DIR = $(CURDIR)
 CNOID_VER   = 1.4.0
 FILENAME    = choreonoid-$(CNOID_VER).zip
 TARBALL     = build/$(FILENAME)
 TARBALL_URL = http://choreonoid.org/_downloads/$(FILENAME)
-SOURCE_DIR  = build/choreonoid-$(CNOID_VER)
+# SOURCE_DIR  = build/choreonoid-$(CNOID_VER)
+GIT_DIR = build/choreonoid-$(CNOID_VER)
+GIT_URL = https://github.com/s-nakaoka/choreonoid.git
+GIT_REVISION = master
 #TARBALL_PATCH = add_dummy_option.patch
-UNPACK_CMD  = unzip
-MD5SUM_FILE = $(shell rospack find choreonoid)/$(FILENAME).md5sum
 BUILD_HELLO_WORLD_SAMPLE = ON # for hello world
 
-include $(shell rospack find mk)/download_unpack_build.mk
+# UNPACK_CMD  = unzip
+# MD5SUM_FILE = $(shell rospack find choreonoid)/$(FILENAME).md5sum
+# include $(shell rospack find mk)/download_unpack_build.mk
 
-installed.choreonoid: $(SOURCE_DIR)/unpacked
-	cd $(SOURCE_DIR) && cmake . -DCMAKE_INSTALL_PREFIX=$(INSTALL_DIR) -DENABLE_INSTALL_RPATH=ON -DBUILD_HELLO_WORLD_SAMPLE=$(BUILD_HELLO_WORLD_SAMPLE) && make -j 4 && make install
+include $(shell rospack find mk)/git_checkout.mk
+
+installed.choreonoid: $(GIT_DIR) # $(SOURCE_DIR)/unpacked
+	@echo "git checkout choreonoid $(GIT_REVISION) ..."
+	# cd $(GIT_DIR) && git reset --hard && git checkout $(GIT_REVISION)
+	cd $(GIT_DIR) && git checkout $(GIT_REVISION)
+
+	@echo "compile hrpsys-base ... "
+	@echo "                 PATH=$(PATH)"
+	@echo "                 INSTALL_DIR=$(INSTALL_DIR)"
+	@echo "                 GIT_DIR=$(GIT_DIR)"
+	cd $(GIT_DIR) && cmake . -DCMAKE_INSTALL_PREFIX=$(INSTALL_DIR) -DENABLE_INSTALL_RPATH=ON -DBUILD_HELLO_WORLD_SAMPLE=$(BUILD_HELLO_WORLD_SAMPLE) && make -j 4 && make install
 	touch installed.choreonoid
 
 clean.choreonoid:
-	-cd $(SOURCE_DIR) && make clean
+	-cd $(GIT_DIR) && make clean
 	rm -fr installed.choreonoid
 
