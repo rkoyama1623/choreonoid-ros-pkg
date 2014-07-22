@@ -8,6 +8,7 @@ TARBALL_URL = http://choreonoid.org/_downloads/$(FILENAME)
 GIT_DIR = build/choreonoid-$(CNOID_VER)
 GIT_URL = https://github.com/s-nakaoka/choreonoid.git
 GIT_REVISION = master
+# GIT_REVISION = add-to-headers
 #TARBALL_PATCH = add_dummy_option.patch
 BUILD_HELLO_WORLD_SAMPLE = ON # for hello world
 
@@ -15,7 +16,8 @@ BUILD_HELLO_WORLD_SAMPLE = ON # for hello world
 # MD5SUM_FILE = $(shell rospack find choreonoid)/$(FILENAME).md5sum
 # include $(shell rospack find mk)/download_unpack_build.mk
 
-include $(shell rospack find mk)/git_checkout.mk
+MK_DIR       = $(shell rospack find mk)
+include $(MK_DIR)/git_checkout.mk
 
 installed.choreonoid: $(GIT_DIR) # $(SOURCE_DIR)/unpacked
 	@echo "git checkout choreonoid $(GIT_REVISION) ..."

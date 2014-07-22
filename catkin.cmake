@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(choroenoid)
 
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED mk)
 
 # catkin_package(DEPENDS eigen)
 
@@ -18,7 +18,7 @@ execute_process(
     COMMAND cmake -E chdir ${CMAKE_CURRENT_BINARY_DIR} # go to build/rtm-ros-robotics/choreonoid
     make -f ${PROJECT_SOURCE_DIR}/Makefile.choreonoid # PROJECT_SOURCE_DIR=src/rtm-ros-robotics/choreonoid
     INSTALL_DIR=${CATKIN_DEVEL_PREFIX} # CATKIN_DEVEL_PREFIX=devel (for making choreonoid(binary) in devel/bin)
-    MK_DIR=${mk_PREFIX}/share/mk
+    MK_DIR=${mk_PREFIX}/share/mk # /opt/ros/hydro/share/mk
     PATCH_DIR=${PROJECT_SOURCE_DIR}
 		CNOID_VER=${CNOID_MAJOR_VER}.${CNOID_MINOR_VER}.${CNOID_PATCH_VER}
     installed.choreonoid
