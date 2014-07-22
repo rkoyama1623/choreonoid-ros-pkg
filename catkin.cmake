@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(choroenoid)
 
-find_package(catkin REQUIRED mk)
+find_package(catkin REQUIRED COMPONENTS mk)
 
 # catkin_package(DEPENDS eigen)
 
