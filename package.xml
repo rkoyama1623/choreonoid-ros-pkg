@@ -62,7 +62,7 @@ Please see their official web sites to see the details of their licenses.
   <build_depend>wx-common</build_depend>
   <build_depend>libqhull</build_depend>
   <build_depend>qhull-bin</build_depend>
-
+  <build_depend>mk</build_depend>
 
   <run_depend>doxygen</run_depend>
   <run_depend>graphviz</run_depend>
