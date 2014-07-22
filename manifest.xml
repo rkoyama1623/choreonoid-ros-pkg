@@ -56,6 +56,7 @@ Please see their official web sites to see the details of their licenses.
   <rosdep name="wx-common" />
   <rosdep name="libqhull" />
   <rosdep name="qhull-bin" />
+  <rosdep name="mk" />
 
 </package>
 
