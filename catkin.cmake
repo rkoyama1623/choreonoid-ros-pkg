@@ -4,7 +4,7 @@ project(choreonoid)
 
 find_package(catkin REQUIRED COMPONENTS mk)
 
-# catkin_package(DEPENDS eigen)
+catkin_package(DEPENDS eigen)
 
 # define choreonoid version to be installed 
 if(NOT CNOID_MAJOR_VER)
