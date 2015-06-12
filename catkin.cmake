@@ -8,7 +8,7 @@ find_package(catkin REQUIRED COMPONENTS mk)
 find_package(PkgConfig)
 
 # catkin_package(DEPENDS eigen)
-pkg_check_modules(eigen eigen REQUIRED)
+pkg_check_modules(eigen3 eigen3 REQUIRED)
 
 # define choreonoid version to be installed 
 if(NOT CNOID_MAJOR_VER)
