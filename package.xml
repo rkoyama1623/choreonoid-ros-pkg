@@ -98,5 +98,6 @@ Please see their official web sites to see the details of their licenses.
   <run_depend>qhull-bin</run_depend>
 
   <export>
+    <build_type>cmake</build_type>
   </export>
 </package>

@@ -21,7 +21,7 @@ endif()
 execute_process(
     COMMAND cmake -E chdir ${CMAKE_CURRENT_BINARY_DIR} # go to build/rtm-ros-robotics/choreonoid
     make -f ${PROJECT_SOURCE_DIR}/Makefile.choreonoid # PROJECT_SOURCE_DIR=src/rtm-ros-robotics/choreonoid
-    INSTALL_DIR=${CATKIN_DEVEL_PREFIX} # CATKIN_DEVEL_PREFIX=devel (for making choreonoid(binary) in devel/bin)
+    INSTALL_DIR=${CMAKE_INSTALL_PREFIX} # CMAKE_INSTALL_PREFIX=devel (for making choreonoid(binary) in devel/bin)
     MK_DIR=${mk_PREFIX}/share/mk # /opt/ros/hydro/share/mk
     PATCH_DIR=${PROJECT_SOURCE_DIR}
 		CNOID_VER=${CNOID_MAJOR_VER}.${CNOID_MINOR_VER}.${CNOID_PATCH_VER}
@@ -41,9 +41,9 @@ if(NOT EXISTS ${PROJECT_SOURCE_DIR}/bin/)
     message(FATAL_ERROR "make_directory ${PROJECT_SOURCE_DIR}/bin/ failed: ${_make_failed}")
   endif(_make_failed)
 endif()
-if(EXISTS ${CATKIN_DEVEL_PREFIX}/bin/choreonoid)
+if(EXISTS ${CMAKE_INSTALL_PREFIX}/bin/choreonoid)
   execute_process(
-    COMMAND cmake -E copy ${CATKIN_DEVEL_PREFIX}/bin/choreonoid ${PROJECT_SOURCE_DIR}/bin/choreonoid
+    COMMAND cmake -E copy ${CMAKE_INSTALL_PREFIX}/bin/choreonoid ${PROJECT_SOURCE_DIR}/bin/choreonoid
     RESULT_VARIABLE _copy_failed)
   message("copy binary files ${PROJECT_SOURCE_DIR}/bin/choreonoid")
 endif()
@@ -61,8 +61,9 @@ if(NOT EXISTS ${PROJECT_SOURCE_DIR}/lib/)
     message(FATAL_ERROR "make_directory ${PROJECT_SOURCE_DIR}/lib/ failed: ${_make_failed}")
   endif(_make_failed)
 endif()
+
 execute_process(
-  COMMAND grep ${CATKIN_DEVEL_PREFIX}/lib/ ${CMAKE_CURRENT_BINARY_DIR}/build/choreonoid-${CNOID_MAJOR_VER}.${CNOID_MINOR_VER}.${CNOID_PATCH_VER}/install_manifest.txt
+  COMMAND grep ${CMAKE_INSTALL_PREFIX}/lib/ ${CMAKE_CURRENT_BINARY_DIR}/build/choreonoid-${CNOID_MAJOR_VER}.${CNOID_MINOR_VER}.${CNOID_PATCH_VER}/install_manifest.txt
   OUTPUT_VARIABLE _lib_files
   RESULT_VARIABLE _grep_failed) # get path of installed lib files in choreonoid-* and preserve in _lib_files 
 if (_grep_failed)
@@ -72,14 +73,14 @@ string(REGEX REPLACE "\n" ";" _lib_files ${_lib_files})
 foreach(_lib_file ${_lib_files})
   get_filename_component(_lib_file_name ${_lib_file} NAME) # get filename (without path)
   if ("${_lib_file}" MATCHES "lib/choreonoid*") # install libraries in lib/choreonoid-* 
-    string(REGEX REPLACE "${CATKIN_DEVEL_PREFIX}/lib/" "" _choreonoid_lib_file ${_lib_file}) # trim devel/rtm-ros-robotics/choreonoid/choreonoid-*/*.so -> choreonoid-*/*.so
+    string(REGEX REPLACE "${CMAKE_INSTALL_PREFIX}/lib/" "" _choreonoid_lib_file ${_lib_file}) # trim devel/rtm-ros-robotics/choreonoid/choreonoid-*/*.so -> choreonoid-*/*.so
     get_filename_component(_choreonoid_file_dir  ${_choreonoid_lib_file} PATH) # trim choreonid-*/*.so -> choreonoid-*
 		execute_process(
-      COMMAND cmake -E copy_directory ${CATKIN_DEVEL_PREFIX}/lib/${_choreonoid_file_dir} ${PROJECT_SOURCE_DIR}/lib/${_choreonoid_file_dir}
+      COMMAND cmake -E copy_directory ${CMAKE_INSTALL_PREFIX}/lib/${_choreonoid_file_dir} ${PROJECT_SOURCE_DIR}/lib/${_choreonoid_file_dir}
       RESULT_VARIABLE _copy_failed) # copy devel/rtm-ros-robotics/choreonoid/lib/choreonoid-* to src/rtm-ros-robotics/choreonoid
   elseif ("${_lib_file_name}" MATCHES "libCnoid.*so") # install lib/libCnoid*.so
     execute_process(
-      COMMAND cmake -E copy ${CATKIN_DEVEL_PREFIX}/lib/${_lib_file_name} ${PROJECT_SOURCE_DIR}/lib/${_lib_file_name}
+      COMMAND cmake -E copy ${CMAKE_INSTALL_PREFIX}/lib/${_lib_file_name} ${PROJECT_SOURCE_DIR}/lib/${_lib_file_name}
       RESULT_VARIABLE _copy_failed) # copy devel/rtm-ros-robotics/choreonoid/lib/libCnoid* to src/rtm-ros-robotics/choreonoid
   endif()
 endforeach()
@@ -96,7 +97,7 @@ endforeach()
 # 	COMMAND cmake -E copy ${CMAKE_CURRENT_BINARY_DIR}/build/choreonoid-${CNOID_MAJOR_VER}.${CNOID_MINOR_VER}.${CNOID_PATCH_VER}/proprietary/BalancerPlugin/libCnoidBalancerPlugin.${ARCH_VAL}.so ${PROJECT_SOURCE_DIR}/lib/choreonoid-${CNOID_MAJOR_VER}.${CNOID_MINOR_VER}/libCnoidBalancerPlugin.so
 # 	RESULT_VARIABLE _balancer_library_copy_failed)
 # execute_process(
-# 	COMMAND cmake -E copy ${CMAKE_CURRENT_BINARY_DIR}/build/choreonoid-${CNOID_MAJOR_VER}.${CNOID_MINOR_VER}.${CNOID_PATCH_VER}/proprietary/BalancerPlugin/libCnoidBalancerPlugin.${ARCH_VAL}.so ${CATKIN_DEVEL_PREFIX}/lib/choreonoid-${CNOID_MAJOR_VER}.${CNOID_MINOR_VER}/libCnoidBalancerPlugin.so
+# 	COMMAND cmake -E copy ${CMAKE_CURRENT_BINARY_DIR}/build/choreonoid-${CNOID_MAJOR_VER}.${CNOID_MINOR_VER}.${CNOID_PATCH_VER}/proprietary/BalancerPlugin/libCnoidBalancerPlugin.${ARCH_VAL}.so ${CMAKE_INSTALL_PREFIX}/lib/choreonoid-${CNOID_MAJOR_VER}.${CNOID_MINOR_VER}/libCnoidBalancerPlugin.so
 # 	RESULT_VARIABLE _balancer_library_copy_failed)
 # if(_balancer_library_copy_failed)
 # 	message(FATAL_ERROR "Copy libCnoidBlancer.so failed: ${_balancer_library_copy_failed}")
