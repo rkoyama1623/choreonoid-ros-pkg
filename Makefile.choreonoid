@@ -20,9 +20,9 @@ MK_DIR       = $(shell rospack find mk)
 include $(MK_DIR)/git_checkout.mk
 
 installed.choreonoid: $(GIT_DIR) # $(SOURCE_DIR)/unpacked
-	@echo "git checkout choreonoid $(GIT_REVISION) ..."
+	# @echo "git checkout choreonoid $(GIT_REVISION) ..."
 	# cd $(GIT_DIR) && git reset --hard && git checkout $(GIT_REVISION)
-	cd $(GIT_DIR) && git checkout $(GIT_REVISION)
+	# cd $(GIT_DIR) && git checkout $(GIT_REVISION)
 
 	@echo "compile hrpsys-base ... "
 	@echo "                 PATH=$(PATH)"
