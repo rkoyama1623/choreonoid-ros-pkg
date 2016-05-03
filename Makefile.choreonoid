@@ -10,6 +10,11 @@ GIT_URL = https://github.com/s-nakaoka/choreonoid.git
 GIT_REVISION = master
 # GIT_REVISION = add-to-headers
 #TARBALL_PATCH = add_dummy_option.patch
+# for simulator in choreonoid
+ENABLE_CORBA = ON
+BUILD_CORBA_PLUGIN = ON
+BUILD_OPENRTM_PLUGIN = ON
+
 BUILD_HELLO_WORLD_SAMPLE = ON # for hello world
 
 # UNPACK_CMD  = unzip
@@ -28,7 +33,7 @@ installed.choreonoid: $(GIT_DIR) # $(SOURCE_DIR)/unpacked
 	@echo "                 PATH=$(PATH)"
 	@echo "                 INSTALL_DIR=$(INSTALL_DIR)"
 	@echo "                 GIT_DIR=$(GIT_DIR)"
-	cd $(GIT_DIR) && cmake . -DCMAKE_INSTALL_PREFIX=$(INSTALL_DIR) -DENABLE_INSTALL_RPATH=ON -DBUILD_HELLO_WORLD_SAMPLE=$(BUILD_HELLO_WORLD_SAMPLE) && make -j 4 && make install
+	cd $(GIT_DIR) && cmake . -DCMAKE_INSTALL_PREFIX=$(INSTALL_DIR) -DENABLE_INSTALL_RPATH=ON -DENABLE_CORBA=$(ENABLE_CORBA) -DBUILD_CORBA_PLUGIN=$(BUILD_CORBA_PLUGIN) -DBUILD_OPENRTM_PLUGIN=$(BUILD_OPENRTM_PLUGIN) -DBUILD_HELLO_WORLD_SAMPLE=$(BUILD_HELLO_WORLD_SAMPLE) && make -j 4 && make install
 	touch installed.choreonoid
 
 clean.choreonoid:
